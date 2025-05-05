@@ -12,11 +12,16 @@ export default function Home() {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
   const [finalImage, setFinalImage] = useState<string | null>(null);
-  const [numPhotos, setNumPhotos] = useState(4);
+  const [numPhotos, setNumPhotos] = useState(2);
   const [showPhotos, setShowPhotos] = useState(false);
   const [bgColor, setBgColor] = useState("#FFF7D1"); // Default light yellow
   const [showGoUp, setShowGoUp] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [flash, setFlash] = useState(false);
+  const photoStripRef = useRef<HTMLDivElement>(null);
+  const [slideInPhoto, setSlideInPhoto] = useState(false);
+
+
 
 
   useEffect(() => {
@@ -38,11 +43,11 @@ export default function Home() {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.play();
-        setStreaming(true);
       }
     }
     startCamera();
   }, []);
+  
 
   useEffect(() => {
     if (capturedImages.length === numPhotos) {
@@ -50,14 +55,23 @@ export default function Home() {
     }
   }, [bgColor, capturedImages]);
   
+  useEffect(() => {
+    if (finalImage && !showPhotos) {
+      setSlideInPhoto(true);
+    }
+  }, [finalImage]);
+  
 
   const startPhotoBooth = async () => {
+    setShowPhotos(false); // hide photos
+    const countdownDuration = 1; // seconds
+
     setIsCapturing(true);         // 🚫 disable buttons
     const newImages: string[] = [];
     setCapturedImages([]); // clear UI view
     setFinalImage(null);
   
-    for (let i = 3; i >= 1; i--) {
+    for (let i = countdownDuration; i >= 1; i--) {
       setCountdown(i);
       await new Promise((res) => setTimeout(res, 1000));
     }
@@ -67,7 +81,7 @@ export default function Home() {
       const dataUrl = await capturePhoto();
       newImages.push(dataUrl);
       if (i < numPhotos - 1) {
-        for (let j = 3; j >= 1; j--) {
+        for (let j = countdownDuration; j >= 1; j--) {
           setCountdown(j);
           await new Promise((res) => setTimeout(res, 1000));
         }
@@ -88,10 +102,13 @@ export default function Home() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return resolve("");
   
+      // Trigger flash effect
+      setFlash(true);
+      setTimeout(() => setFlash(false), 300); // quick flash
+  
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
   
-      // Mirror the image
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -101,6 +118,7 @@ export default function Home() {
       resolve(dataUrl);
     });
   };
+  
   
   
 
@@ -168,27 +186,53 @@ export default function Home() {
   
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-pink-100 to-pink-200 flex items-center justify-center px-4 py-10">
-      <div className="max-w-2xl w-full bg-white shadow-xl rounded-xl p-6 flex flex-col items-center gap-6">
-        <h1 className="text-4xl font-bold text-center text-gray-900">📸 Photobooth</h1>
-  
-        <div className="flex flex-col items-center w-full gap-6">
-          {/* Webcam feed */}
-          <div className="w-full max-w-md relative">
-            <video
-              ref={videoRef}
-              className="rounded-lg border-2 border-gray-300 w-full h-auto scale-x-[-1]"
-              autoPlay
-              playsInline
-              muted
-            />
-            {countdown !== null && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
-                <span className="text-6xl font-bold text-white">{countdown}</span>
-              </div>
-            )}
-          </div>
+    <main className="min-h-screen bg-gradient-to-b from-[#3b556e] to-[#121a21] flex items-center justify-center px-4 py-10">
+      
 
+      <div className="max-w-2xl w-full bg-[#8fafcf] shadow-lg rounded-xl p-6 flex flex-col items-center gap-6 border border-[#3c4a5a]">
+        <h1 className="text-4xl font-bold text-center text-gray-900">📸 Photobooth</h1>
+        <div className="relative w-[600px] h-[600px] mx-auto bg-cover bg-center" style={{ backgroundImage: "url('/photobooth-bg.png')" }}>
+          {/* Video feed inside the screen */}
+          <video
+            ref={videoRef}
+            className="absolute top-[21.85%] left-[29.5%] w-[40%] h-[21%] rounded-md scale-x-[-1] object-cover"
+            autoPlay
+            muted
+            playsInline
+          />
+          {flash && (
+            <div className="absolute top-[21.85%] left-[29.5%] w-[40%] h-[21%] bg-white opacity-90 rounded-md animate-fade-out pointer-events-none" />
+          )}
+
+          {/* Countdown overlay (optional) */}
+          {countdown !== null && (
+            <div className="absolute top-[21.85%] left-[29.5%] w-[40%] h-[21%] flex items-center justify-center bg-black/20 rounded-md">
+              <span className="text-white text-6xl font-bold">{countdown}</span>
+            </div>
+          )}
+
+          {/* Insert Coin Button */}
+          <div
+          className="absolute bottom-[32.9%] right-[29.73%] flex flex-col items-center"
+          style={{ width: "9.35%" }}
+        >
+          <span className="text-white text-s font-bold mb-1 animate-bounce">
+          {isCapturing ? "" : "Click!"}
+          </span>
+          <div className="w-full aspect-square">
+            <button
+              onClick={startPhotoBooth}
+              disabled={isCapturing}
+              className={`w-full h-full rounded-full bg-yellow-400 shadow-lg border-2 border-yellow-600 transition-all duration-500
+                ${isCapturing ? "opacity-20 cursor-not-allowed" : "animate-pulse"}
+              `}
+            />
+          </div>
+        </div>
+
+      </div>
+          
+        <div className="flex flex-col items-center w-full gap-6">
           {/* Controls */}
           <div className="flex flex-col gap-4  max-w-sm text-gray-800">
             <label className="text-lg font-medium">
@@ -217,7 +261,7 @@ export default function Home() {
                   { name: "Sky Blue", color: "#E0F2FE" },
                   { name: "Mint", color: "#D1FAE5" },
                   { name: "Peach", color: "#FFE5B4" },
-                  { name: "Lavender", color: "#F3E8FF" },
+                  { name: "black", color: "#000000" },
                 ].map(({ name, color }) => (
                   <button
                     key={name}
@@ -233,21 +277,10 @@ export default function Home() {
                 ))}
               </div>
             </div>
-
-
-            <button
-              onClick={startPhotoBooth}
-              disabled={isCapturing}
-              className={`font-bold py-2 px-4 rounded transition duration-200
-                ${isCapturing
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-                }`}
-            >
-              {isCapturing ? "Capturing..." : "Start Photo Booth"}
-            </button>
           </div>
-        </div>
+        </div> 
+        
+
 
 
   
@@ -260,17 +293,44 @@ export default function Home() {
             {showPhotos ? "Hide Photos" : "Show Photos"}
           </button>
         )}
-  
+
+{finalImage && !showPhotos && (
+  <div // should expand height based on number of photos
+    className={'absolute bottom-[6%] left-1/2 w-24 ${capturedImages.length * 18} overflow-hidden'}
+    style={{ transform: "translateX(-50%)" }}
+  >
+    <div
+      className={`w-full cursor-pointer ${slideInPhoto ? "slide-down-out" : ""}`}
+      onClick={() => {
+        photoStripRef.current?.scrollIntoView({ behavior: "smooth" });
+        setShowPhotos(true);
+        setSlideInPhoto(false); // reset for next time
+      }}
+    >
+      <img
+        src={finalImage}
+        alt="Photostrip"
+        className="w-full h-auto rounded-md shadow-lg"
+      />
+    </div>
+  </div>
+)}
+
+
+
+
+
   
         {/* Final photostrip */}
         {finalImage && showPhotos && (
-          <div className="text-center mt-6 w-full">
+          <div ref={photoStripRef} className="text-center mt-6 w-full">
             <h2 className="text-2xl font-semibold mb-2 text-gray-800">Your Photostrip</h2>
             <img
               src={finalImage}
               alt="Photostrip"
               className="mx-auto border-4 border-white shadow-lg rounded-lg bg-[#FFF7D1]"
             />
+            
 
             <a
               href={finalImage}
