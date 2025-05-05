@@ -189,13 +189,13 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-b from-[#3b556e] to-[#121a21] flex items-center justify-center px-4 py-10">
       
 
-      <div className="max-w-2xl w-full bg-[#8fafcf] shadow-lg rounded-xl p-6 flex flex-col items-center gap-6 border border-[#3c4a5a]">
-        <h1 className="text-4xl font-bold text-center text-gray-900">📸 Photobooth</h1>
-        <div className="relative w-[600px] h-[600px] mx-auto bg-cover bg-center" style={{ backgroundImage: "url('/photobooth-bg.png')" }}>
+      <div className="max-w-7xl w-full bg-[#8fafcf] shadow-lg rounded-xl p-6 flex flex-col items-center gap-6 border border-[#3c4a5a]">
+        {/* <h1 className="text-4xl font-bold text-center text-gray-900">📸 Photobooth</h1> */}
+        <div className="relative w-[100%] h-[800px] mx-auto bg-cover bg-center" style={{ backgroundImage: "url('/photobooth.png')" }}>
           {/* Video feed inside the screen */}
           <video
             ref={videoRef}
-            className="absolute top-[21.85%] left-[29.5%] w-[40%] h-[21%] rounded-md scale-x-[-1] object-cover"
+            className="absolute top-[21%] left-[26.5%] w-[47.5%] h-[43.65%] rounded-md scale-x-[-1] object-cover"
             autoPlay
             muted
             playsInline
@@ -213,22 +213,22 @@ export default function Home() {
 
           {/* Insert Coin Button */}
           <div
-          className="absolute bottom-[32.9%] right-[29.73%] flex flex-col items-center"
-          style={{ width: "9.35%" }}
-        >
-          <span className="text-white text-s font-bold mb-1 animate-bounce">
-          {isCapturing ? "" : "Click!"}
-          </span>
-          <div className="w-full aspect-square">
-            <button
-              onClick={startPhotoBooth}
-              disabled={isCapturing}
-              className={`w-full h-full rounded-full bg-yellow-400 shadow-lg border-2 border-yellow-600 transition-all duration-500
-                ${isCapturing ? "opacity-20 cursor-not-allowed" : "animate-pulse"}
-              `}
-            />
+            className="absolute bottom-[57%] right-[10%] flex flex-col items-center"
+            style={{ width: "7%" }}
+          >
+            <span className="text-white text-s font-bold mb-1 animate-bounce">
+            {isCapturing ? "" : "Click!"}
+            </span>
+            <div className="w-full aspect-square">
+              <img
+                src="/takePictureButton.png"
+                alt="Click!"
+                className={`w-full h-auto rounded-md shadow-lg transition-all duration-500 onHover:scale-105`}
+                onClick={startPhotoBooth}
+              />
+
+            </div>
           </div>
-        </div>
 
       </div>
           
@@ -294,27 +294,27 @@ export default function Home() {
           </button>
         )}
 
-{finalImage && !showPhotos && (
-  <div // should expand height based on number of photos
-    className={'absolute bottom-[6%] left-1/2 w-24 ${capturedImages.length * 18} overflow-hidden'}
-    style={{ transform: "translateX(-50%)" }}
-  >
-    <div
-      className={`w-full cursor-pointer ${slideInPhoto ? "slide-down-out" : ""}`}
-      onClick={() => {
-        photoStripRef.current?.scrollIntoView({ behavior: "smooth" });
-        setShowPhotos(true);
-        setSlideInPhoto(false); // reset for next time
-      }}
-    >
-      <img
-        src={finalImage}
-        alt="Photostrip"
-        className="w-full h-auto rounded-md shadow-lg"
-      />
-    </div>
-  </div>
-)}
+        {finalImage && !showPhotos && (
+          <div // should expand height based on number of photos
+            className={'absolute bottom-[6%] left-1/2 w-24 ${capturedImages.length * 18} overflow-hidden'}
+            style={{ transform: "translateX(-50%)" }}
+          >
+            <div
+              className={`w-full cursor-pointer ${slideInPhoto ? "slide-down-out" : ""}`}
+              onClick={() => {
+                photoStripRef.current?.scrollIntoView({ behavior: "smooth" });
+                setShowPhotos(true);
+                setSlideInPhoto(false); // reset for next time
+              }}
+            >
+              <img
+                src={finalImage}
+                alt="Photostrip"
+                className="w-full h-auto rounded-md shadow-lg"
+              />
+            </div>
+          </div>
+        )}  
 
 
 
