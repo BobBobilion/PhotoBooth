@@ -33,10 +33,6 @@ export default function Home() {
   }, []);
 
 
-
-
-
-
   useEffect(() => {
     const onScroll = () => {
       setShowGoUp(window.scrollY > 300);
@@ -44,7 +40,6 @@ export default function Home() {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  
 
 
   useEffect(() => {
@@ -63,16 +58,16 @@ export default function Home() {
   
 
   useEffect(() => {
-    if (capturedImages.length === numPhotos) {
+    // if (capturedImages.length === numPhotos) {
       combineImages(capturedImages, bgColor);
-    }
+    // }
   }, [bgColor, capturedImages]);
   
-  useEffect(() => {
-    if (finalImage && !showPhotos) {
-      setSlideInPhoto(true);
-    }
-  }, [finalImage]);
+  // useEffect(() => {
+  //   if (finalImage && !showPhotos) {
+  //     setSlideInPhoto(true);
+  //   }
+  // }, [finalImage]);
   
 
   const startPhotoBooth = async () => {
@@ -104,6 +99,7 @@ export default function Home() {
   
     setCapturedImages(newImages);
     setIsCapturing(false);
+    setSlideInPhoto(true);
   };
   
 
@@ -360,9 +356,9 @@ export default function Home() {
           />
           
           
-          {finalImage && !showPhotos && (
+          {finalImage && (
             <div // should expand height based on number of photos
-              className={'absolute top-[89%] right-[7.25%] w-[8.5%] ${capturedImages.length * 18} overflow-hidden'}
+              className={'absolute top-[89%] right-[7.25%] w-[8.5%] ${capturedImages.length * 18} overflow-hidden hover:scale-103 transition-transform duration-100'}
               style={{ transform: "translateX(-50%)" }}
             >
               <div
@@ -392,10 +388,18 @@ export default function Home() {
         <div className="flex flex-col items-center w-[50%] gap-6">         
 
           {/* Show photos toggle */}
-          {capturedImages.length === numPhotos && (
+          {capturedImages.length != 0 && (
             <button
               ref={showToggleRef}
-              onClick={() => setShowPhotos((prev) => !prev)}
+              onClick={() => {
+                if (!showPhotos) {
+                  setSlideInPhoto(false);
+                  setTimeout(() => {
+                    photoStripRef.current?.scrollIntoView({ behavior: "smooth" });
+                  }, 50);
+                }
+                setShowPhotos((prev) => !prev)}
+              }
               className="mt-4 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 px-4 rounded"
             >
               {showPhotos ? "Hide Photos" : "Show Photos"}
