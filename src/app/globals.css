@@ -39,3 +39,20 @@ body {
 .slide-down-out {
   animation: slideDownOut 0.8s ease-out forwards;
 }
+
+@keyframes pulseScale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.07);
+  }
+}
+
+.pulse {
+  animation: pulseScale 1.5s ease-in-out infinite;
+}
+.pulse:hover {
+  animation: none;
+  transform: scale(1); /* Optional: hold scale at 1 */
+}
