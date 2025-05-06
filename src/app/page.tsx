@@ -58,9 +58,9 @@ export default function Home() {
   
 
   useEffect(() => {
-    // if (capturedImages.length === numPhotos) {
+    if (capturedImages.length !== 0) {
       combineImages(capturedImages, bgColor);
-    // }
+    }
   }, [bgColor, capturedImages]);
   
   // useEffect(() => {
@@ -202,7 +202,7 @@ export default function Home() {
       <div className="max-w-7xl w-full bg-[#8fafcf] shadow-lg rounded-xl p-6 flex flex-col items-center gap-6 border border-[#3c4a5a]">
 
         
-        <div className="relative w-full max-w-[1000px] aspect-[1026/669] mx-auto bg-cover bg-center" style={{ backgroundImage: "url('/cropedBooth3.png')" }}>{/*"url('/cropedBooth.png')" }}>*/}
+        <div className="relative w-full max-w-[1000px] aspect-[1026/669] mx-auto bg-cover bg-center" style={{ backgroundImage: "url('/cropedBooth4.png')" }}>{/*"url('/cropedBooth.png')" }}>*/}
           {/* Video feed inside the screen */}
           <div className={`${videoPosition} relative`}>
             {/* Webcam Feed */}
